@@ -1,9 +1,7 @@
 ﻿ADown
 =====================
 
-A Facebook Downloader in C#. This uses the Facebook Graph API to get the albums of the user,
-match the specified album with the album URL supplied by the user, get its ID, and fetch the photo
-URLs using the API again.
+A Facebook Downloader in C#. This uses the Facebook Graph API to get the albums of the user, match the specified album with the album URL supplied by the user, get its ID, and fetch the photo URLs using the API again.
 
 Notes
 ---------------------
