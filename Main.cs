@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -19,11 +19,6 @@ namespace ADown
 {
     public partial class frmMain : Form
     {
-
-        /// <summary>
-        /// Control for the threads.
-        /// </summary>
-        private bool stopAll = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="frmMain"/> class.
@@ -61,7 +56,7 @@ namespace ADown
                 MessageBox.Show("Invalid Album URL", "Can't Continue", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
-            
+
             // Start the main sub thread
             Thread mSub = new Thread(unused => ADinit());
             mSub.Start();
@@ -95,17 +90,6 @@ namespace ADown
             {
                 txtSv.Text = fbdSv.SelectedPath;
             }
-        }
-
-        /// <summary>
-        /// Handles the FormClosing event of the frmMain control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="System.Windows.Forms.FormClosingEventArgs"/> instance containing the event data.</param>
-        private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            // Stop all threads.
-            stopAll = true;
         }
 
         /// <summary>
@@ -193,19 +177,21 @@ namespace ADown
 
             // Check if the URL has the user id parameter
             // And store it in the list
-            if (Regex.IsMatch(url, @"a\.[0-9]+\.[0-9]+\.[0-9]+$"))
+            if (Regex.IsMatch(url, @"a\.[0-9]+\.[0-9]+\.[0-9]+(&.+)?$"))
             {
-                m = Regex.Match(url, @"\.([0-9]+)$");
+                m = Regex.Match(url, @"a\.[0-9]+\.[0-9]+\.([0-9]+)(&.+)?$");
                 details.Add(m.Groups[1].Value);
-            } else {
+            }
+            else
+            {
                 valid = false;
             }
 
             // Check if the URL containts the album id
             // And store it aswell
-            if (Regex.IsMatch(url, @"a\.[0-9]+\.[0-9]+\.[0-9]+$"))
+            if (Regex.IsMatch(url, @"a\.[0-9]+\.[0-9]+\.[0-9]+(&.+)?$"))
             {
-                m = Regex.Match(url, @"a\.[0-9]+\.([0-9]+)\.[0-9]+$");
+                m = Regex.Match(url, @"a\.([0-9]+)\.[0-9]+\.[0-9]+(&.+)?$");
                 details.Add(m.Groups[1].Value);
             }
             else
@@ -260,7 +246,7 @@ namespace ADown
 
                 return;
             }
-            
+
             // Get the Post form ID in facebook login page.
             // Regular expression is used because this is a
             // simple data capture, no need for external
@@ -268,7 +254,7 @@ namespace ADown
             setStatus("Getting PFI");
             response = browser.HttpGet("http://m.facebook.com/index.php");
             pfi = Regex.Match(response, @"name=""post_form_id"" value=""(\w+)""").Groups[1].Value;
-            
+
             // Then we use the PFI to initialize the post data
             // for the login.
             loginData = "lsd=";
@@ -287,7 +273,7 @@ namespace ADown
             if (!response.Contains("Logout"))
             {
                 MessageBox.Show("Please make sure the credentials are valid.", "Unable to login to account", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                
+
                 // Re enable the controls
                 if (InvokeRequired)
                     this.Invoke(new MethodInvoker(enableControls));
@@ -303,7 +289,7 @@ namespace ADown
             setStatus("Getting Access Token");
             response = browser.HttpGet("http://developers.facebook.com/docs/reference/api");
             acctoken = Regex.Match(response, @"access_token=(.*?)""").Groups[1].Value;
-            
+
             // Fail handler (this should not be happening)
             if (acctoken == "")
             {
@@ -332,13 +318,12 @@ namespace ADown
             foreach (Hashtable data in (ArrayList)json["data"])
             {
                 string aid = data["id"].ToString();
-                string link = data["link"].ToString();
                 string name = data["name"].ToString();
                 int pCount = Int32.Parse(data["count"].ToString());
 
                 // For us to know which album id to pick,
                 // We need to look for the short album id in the link
-                if (Regex.IsMatch(link, String.Format("aid={0}", ids[1])))
+                if (ids[1] == aid)
                 {
                     albumExists = true;
                     count = pCount;
@@ -350,6 +335,8 @@ namespace ADown
             // If the album doesn't exist
             if (!albumExists)
             {
+                MessageBox.Show("Album doesn't exist", "No Album Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
                 // Re enable the controls
                 if (InvokeRequired)
                     this.Invoke(new MethodInvoker(enableControls));
@@ -392,6 +379,16 @@ namespace ADown
             // Re enable the controls
             if (InvokeRequired)
                 this.Invoke(new MethodInvoker(enableControls));
+        }
+
+        /// <summary>
+        /// Handles the LinkClicked event of the lnkDonate control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="System.Windows.Forms.LinkLabelLinkClickedEventArgs"/> instance containing the event data.</param>
+        private void lnkDonate_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SMSGBAUQN6QVY");
         }
     }
 }
