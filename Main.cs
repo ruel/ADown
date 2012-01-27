@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -193,9 +193,9 @@ namespace ADown
 
             // Check if the URL has the user id parameter
             // And store it in the list
-            if (Regex.IsMatch(url, "id=[0-9]+"))
+            if (Regex.IsMatch(url, @"a\.[0-9]+\.[0-9]+\.[0-9]+$"))
             {
-                m = Regex.Match(url, "id=([0-9]+)");
+                m = Regex.Match(url, @"\.([0-9]+)$");
                 details.Add(m.Groups[1].Value);
             } else {
                 valid = false;
@@ -203,9 +203,9 @@ namespace ADown
 
             // Check if the URL containts the album id
             // And store it aswell
-            if (Regex.IsMatch(url, "id=[0-9]+"))
+            if (Regex.IsMatch(url, @"a\.[0-9]+\.[0-9]+\.[0-9]+$"))
             {
-                m = Regex.Match(url, "aid=([0-9]+)");
+                m = Regex.Match(url, @"a\.[0-9]+\.([0-9]+)\.[0-9]+$");
                 details.Add(m.Groups[1].Value);
             }
             else
@@ -241,6 +241,7 @@ namespace ADown
         {
             // Initialize the Basic Request Class, and other variables.
             BReq browser = new BReq();
+            browser.UserAgent = @"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0.1) Gecko/20100101 Firefox/4.0.1";
             int count = 0, prog = 0;
             string response, pfi, loginData, acctoken, albumId = string.Empty, aName = string.Empty;
             bool albumExists = false;
@@ -319,7 +320,7 @@ namespace ADown
 
             // Retrieve the list of albums of the user
             setStatus("Getting Album List");
-            response = browser.HttpGet(String.Format("https://graph.facebook.com/{0}/albums?access_token={1}", ids[0], acctoken));
+            response = browser.HttpGet(String.Format("https://graph.facebook.com/{0}/albums?access_token={1}&limit=500", ids[0], acctoken));
 
             // Decode the JSON response.
             // I used a parser from:
