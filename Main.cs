@@ -259,7 +259,7 @@ namespace ADown
             // for the login.
             loginData = "lsd=";
             loginData += "&post_form_id=" + pfi;
-            loginData += "&charset_test=" + HttpUtility.UrlDecode("%E2%82%AC%2C%C2%B4%2C%E2%82%AC%2C%C2%B4%2C%E6%B0%B4%2C%D0%94%2C%D0%84");
+            loginData += "&charset_test=" + Uri.UnescapeDataString("%E2%82%AC%2C%C2%B4%2C%E2%82%AC%2C%C2%B4%2C%E6%B0%B4%2C%D0%94%2C%D0%84");
             loginData += "&email=" + txtEmail.Text;
             loginData += "&pass=" + txtPassword.Text;
             loginData += "&login=Login";
