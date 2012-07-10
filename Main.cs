@@ -172,38 +172,15 @@ namespace ADown
         private List<string> ParseAlbumUrl(string url)
         {
             List<string> details = new List<string>();
-            bool valid = true;
             Match m;
 
-            // Check if the URL has the user id parameter
+            // Check if the URL has the user id and the album id parameter
             // And store it in the list
             if (Regex.IsMatch(url, @"a\.[0-9]+\.[0-9]+\.[0-9]+(&.+)?$"))
             {
-                m = Regex.Match(url, @"a\.[0-9]+\.[0-9]+\.([0-9]+)(&.+)?$");
+                m = Regex.Match(url, @"a\.([0-9]+)\.[0-9]+\.([0-9]+)(&.+)?$");
+                details.Add(m.Groups[2].Value);
                 details.Add(m.Groups[1].Value);
-            }
-            else
-            {
-                valid = false;
-            }
-
-            // Check if the URL containts the album id
-            // And store it aswell
-            if (Regex.IsMatch(url, @"a\.[0-9]+\.[0-9]+\.[0-9]+(&.+)?$"))
-            {
-                m = Regex.Match(url, @"a\.([0-9]+)\.[0-9]+\.[0-9]+(&.+)?$");
-                details.Add(m.Groups[1].Value);
-            }
-            else
-            {
-                valid = false;
-            }
-
-
-            // Check if the URL is valid
-            if (valid)
-            {
-                // If it's valid add the word "valid"
                 details.Add("valid");
             }
             else
@@ -229,7 +206,7 @@ namespace ADown
             BReq browser = new BReq();
             browser.UserAgent = @"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0.1) Gecko/20100101 Firefox/4.0.1";
             int count = 0, prog = 0;
-            string response, pfi, loginData, acctoken, albumId = string.Empty, aName = string.Empty;
+            string response, pfi, loginData, acctoken, albumId = string.Empty, aName = string.Empty, oName = string.Empty; ;
             bool albumExists = false;
             Hashtable json;
             List<string> ids, albums = new List<string>();
@@ -319,7 +296,26 @@ namespace ADown
             {
                 string aid = data["id"].ToString();
                 string name = data["name"].ToString();
-                int pCount = Int32.Parse(data["count"].ToString());
+                string owner = ((Hashtable)data["from"])["name"].ToString();
+
+                // Escape invalid characters in album name and owner name
+                foreach (char i in Path.GetInvalidPathChars())
+                {
+                    name = name.Replace(i.ToString(), string.Empty);
+                    owner = owner.Replace(i.ToString(), string.Empty);
+                }
+
+                int pCount = 1;
+
+                // Check for the count field
+                try
+                {
+                    pCount = Int32.Parse(data["count"].ToString());
+                }
+                catch (Exception ex)
+                {
+                    // Must be single-photo albums
+                }
 
                 // For us to know which album id to pick,
                 // We need to look for the short album id in the link
@@ -329,6 +325,8 @@ namespace ADown
                     count = pCount;
                     albumId = aid;
                     aName = name;
+                    oName = owner;
+                    break;
                 }
             }
 
@@ -345,8 +343,10 @@ namespace ADown
                 return;
             }
 
-            // Create a directory for that album
-            Directory.CreateDirectory(String.Format(@"{0}\{1}", txtSv.Text, aName));
+            // Create a directory for the owner and album
+            Directory.CreateDirectory(String.Format(@"{0}\{1}", txtSv.Text, oName));
+            Directory.CreateDirectory(String.Format(@"{0}\{1}\{2}", txtSv.Text, oName, aName));
+
 
             // Update the progress total
             updateProgress(0, count);
@@ -369,7 +369,7 @@ namespace ADown
                 // Download and save image
                 prog++;
                 picture = browser.GetImage(source);
-                picture.Save(String.Format(@"{0}\{1}\{2}.jpg", txtSv.Text, aName, pid));
+                picture.Save(String.Format(@"{0}\{1}\{2}\{3}.jpg", txtSv.Text, oName, aName, pid));
                 updateProgress(prog, count);
             }
 
