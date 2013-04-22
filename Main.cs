@@ -19,6 +19,7 @@ namespace ADown
 {
     public partial class frmMain : Form
     {
+        private string AccessToken;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="frmMain"/> class.
@@ -26,6 +27,7 @@ namespace ADown
         public frmMain()
         {
             InitializeComponent();
+            AccessToken = "";
         }
 
         /// <summary>
@@ -45,12 +47,6 @@ namespace ADown
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void btnADown_Click(object sender, EventArgs e)
         {
-            if (txtEmail.Text == "")
-            {
-                MessageBox.Show("You must provide a Facebook login information.", "Can't Continue", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                return;
-            }
-
             if (txtAl.Text == "")
             {
                 MessageBox.Show("Invalid Album URL", "Can't Continue", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -99,8 +95,6 @@ namespace ADown
         {
             btnChange.Enabled = false;
             btnADown.Enabled = false;
-            txtEmail.ReadOnly = true;
-            txtPassword.ReadOnly = true;
             txtSv.ReadOnly = true;
             txtAl.ReadOnly = true;
         }
@@ -112,8 +106,6 @@ namespace ADown
         {
             btnChange.Enabled = true;
             btnADown.Enabled = true;
-            txtEmail.ReadOnly = false;
-            txtPassword.ReadOnly = false;
             txtSv.ReadOnly = false;
             txtAl.ReadOnly = false;
 
@@ -193,8 +185,6 @@ namespace ADown
             return details;
         }
 
-
-
         /// <summary>
         /// Initializes ADown.
         /// Checks if the login information is valid, and gets
@@ -206,7 +196,7 @@ namespace ADown
             BReq browser = new BReq();
             browser.UserAgent = @"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0.1) Gecko/20100101 Firefox/4.0.1";
             int count = 0, prog = 0;
-            string response, pfi, loginData, acctoken, albumId = string.Empty, aName = string.Empty, oName = string.Empty; ;
+            string response, pfi, loginData, acctoken = string.Empty, albumId = string.Empty, aName = string.Empty, oName = string.Empty; ;
             bool albumExists = false;
             Hashtable json;
             List<string> ids, albums = new List<string>();
@@ -224,62 +214,7 @@ namespace ADown
                 return;
             }
 
-            // Get the Post form ID in facebook login page.
-            // Regular expression is used because this is a
-            // simple data capture, no need for external
-            // HTML parsers.
-            setStatus("Getting PFI");
-            response = browser.HttpGet("http://m.facebook.com/index.php");
-            pfi = Regex.Match(response, @"name=""post_form_id"" value=""(\w+)""").Groups[1].Value;
-
-            // Then we use the PFI to initialize the post data
-            // for the login.
-            loginData = "lsd=";
-            loginData += "&post_form_id=" + pfi;
-            loginData += "&charset_test=" + Uri.UnescapeDataString("%E2%82%AC%2C%C2%B4%2C%E2%82%AC%2C%C2%B4%2C%E6%B0%B4%2C%D0%94%2C%D0%84");
-            loginData += "&email=" + txtEmail.Text;
-            loginData += "&pass=" + txtPassword.Text;
-            loginData += "&login=Login";
-
-            // Login to facebook.
-            // NOTE that there's a great chance for this to FAIL
-            // in the future. As for now, March 11, 2011, this
-            // works just great.
-            setStatus("Logging in to Facebook");
-            response = browser.HttpPost("https://www.facebook.com/login.php?m=m&refsrc=http%3A%2F%2Fm.facebook.com%2Findex.php&refid=8", loginData);
-            if (!response.Contains("Logout"))
-            {
-                MessageBox.Show("Please make sure the credentials are valid.", "Unable to login to account", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                // Re enable the controls
-                if (InvokeRequired)
-                    this.Invoke(new MethodInvoker(enableControls));
-
-                // Log the HTML file (for debugging)
-                browser.DebugHtml(response);
-                return;
-            }
-
-            // Get the Access Token
-            // If this one fails, please email me
-            // bugs@ruel.me
-            setStatus("Getting Access Token");
-            response = browser.HttpGet("http://developers.facebook.com/docs/reference/api");
-            acctoken = Regex.Match(response, @"access_token=(.*?)""").Groups[1].Value;
-
-            // Fail handler (this should not be happening)
-            if (acctoken == "")
-            {
-                MessageBox.Show("Access Token not found, This should not be happening.\nPlease send an email to bugs@ruel.me", "Can't get Access Token", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                // Re enable the controls
-                if (InvokeRequired)
-                    this.Invoke(new MethodInvoker(enableControls));
-
-                // Log the HTML file (for debugging)
-                browser.DebugHtml(response);
-                return;
-            }
+            acctoken = AccessToken;
 
             // Retrieve the list of albums of the user
             setStatus("Getting Album List");
@@ -389,6 +324,29 @@ namespace ADown
         private void lnkDonate_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Process.Start("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SMSGBAUQN6QVY");
+        }
+
+        /// <summary>
+        /// Handles the Click event of the pbFb control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void pbFb_Click(object sender, EventArgs e)
+        {
+            // Initialize and open a modal form for the Facebook OAuth login
+            FacebookLogin fbl = new FacebookLogin();
+            fbl.ShowDialog(this);
+
+            // AccessToken will be empty "" if login fails or window was closed manually
+            AccessToken = fbl.AccessToken;
+
+            // Enable 'Download' button if login is successful, and display a message instead of the previous login image button
+            if (AccessToken != "")
+            {
+                pbFb.Visible = false;
+                lblL1.Visible = true;
+                btnADown.Enabled = true;
+            }
         }
     }
 }

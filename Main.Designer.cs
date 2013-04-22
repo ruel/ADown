@@ -30,10 +30,6 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
             this.grpLogin = new System.Windows.Forms.GroupBox();
-            this.txtPassword = new System.Windows.Forms.TextBox();
-            this.txtEmail = new System.Windows.Forms.TextBox();
-            this.lblPassword = new System.Windows.Forms.Label();
-            this.lblEmail = new System.Windows.Forms.Label();
             this.grpAlbum = new System.Windows.Forms.GroupBox();
             this.btnADown = new System.Windows.Forms.Button();
             this.stProg = new System.Windows.Forms.Label();
@@ -48,55 +44,23 @@
             this.lblDev = new System.Windows.Forms.Label();
             this.fbdSv = new System.Windows.Forms.FolderBrowserDialog();
             this.lnkDonate = new System.Windows.Forms.LinkLabel();
+            this.pbFb = new System.Windows.Forms.PictureBox();
+            this.lblL1 = new System.Windows.Forms.Label();
             this.grpLogin.SuspendLayout();
             this.grpAlbum.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbFb)).BeginInit();
             this.SuspendLayout();
             // 
             // grpLogin
             // 
-            this.grpLogin.Controls.Add(this.txtPassword);
-            this.grpLogin.Controls.Add(this.txtEmail);
-            this.grpLogin.Controls.Add(this.lblPassword);
-            this.grpLogin.Controls.Add(this.lblEmail);
+            this.grpLogin.Controls.Add(this.lblL1);
+            this.grpLogin.Controls.Add(this.pbFb);
             this.grpLogin.Location = new System.Drawing.Point(12, 12);
             this.grpLogin.Name = "grpLogin";
             this.grpLogin.Size = new System.Drawing.Size(453, 106);
             this.grpLogin.TabIndex = 0;
             this.grpLogin.TabStop = false;
-            this.grpLogin.Text = "Account Information";
-            // 
-            // txtPassword
-            // 
-            this.txtPassword.Location = new System.Drawing.Point(112, 62);
-            this.txtPassword.Name = "txtPassword";
-            this.txtPassword.PasswordChar = '*';
-            this.txtPassword.Size = new System.Drawing.Size(276, 23);
-            this.txtPassword.TabIndex = 1;
-            // 
-            // txtEmail
-            // 
-            this.txtEmail.Location = new System.Drawing.Point(112, 30);
-            this.txtEmail.Name = "txtEmail";
-            this.txtEmail.Size = new System.Drawing.Size(276, 23);
-            this.txtEmail.TabIndex = 0;
-            // 
-            // lblPassword
-            // 
-            this.lblPassword.AutoSize = true;
-            this.lblPassword.Location = new System.Drawing.Point(46, 65);
-            this.lblPassword.Name = "lblPassword";
-            this.lblPassword.Size = new System.Drawing.Size(60, 15);
-            this.lblPassword.TabIndex = 0;
-            this.lblPassword.Text = "Password:";
-            // 
-            // lblEmail
-            // 
-            this.lblEmail.AutoSize = true;
-            this.lblEmail.Location = new System.Drawing.Point(67, 33);
-            this.lblEmail.Name = "lblEmail";
-            this.lblEmail.Size = new System.Drawing.Size(39, 15);
-            this.lblEmail.TabIndex = 0;
-            this.lblEmail.Text = "Email:";
+            this.grpLogin.Text = "Facebook Login";
             // 
             // grpAlbum
             // 
@@ -119,6 +83,7 @@
             // 
             // btnADown
             // 
+            this.btnADown.Enabled = false;
             this.btnADown.Location = new System.Drawing.Point(191, 174);
             this.btnADown.Name = "btnADown";
             this.btnADown.Size = new System.Drawing.Size(75, 27);
@@ -231,6 +196,28 @@
             this.lnkDonate.Text = "Donate";
             this.lnkDonate.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkDonate_LinkClicked);
             // 
+            // pbFb
+            // 
+            this.pbFb.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.pbFb.Image = global::ADown.Properties.Resources.Facebook_m;
+            this.pbFb.Location = new System.Drawing.Point(108, 33);
+            this.pbFb.Name = "pbFb";
+            this.pbFb.Size = new System.Drawing.Size(240, 46);
+            this.pbFb.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pbFb.TabIndex = 0;
+            this.pbFb.TabStop = false;
+            this.pbFb.Click += new System.EventHandler(this.pbFb_Click);
+            // 
+            // lblL1
+            // 
+            this.lblL1.AutoSize = true;
+            this.lblL1.Location = new System.Drawing.Point(157, 49);
+            this.lblL1.Name = "lblL1";
+            this.lblL1.Size = new System.Drawing.Size(126, 15);
+            this.lblL1.TabIndex = 1;
+            this.lblL1.Text = "Logged in successfully";
+            this.lblL1.Visible = false;
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -245,12 +232,14 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "frmMain";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "ADown - Facebook Album Downloader";
             this.Load += new System.EventHandler(this.frmMain_Load);
             this.grpLogin.ResumeLayout(false);
             this.grpLogin.PerformLayout();
             this.grpAlbum.ResumeLayout(false);
             this.grpAlbum.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbFb)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -259,10 +248,6 @@
         #endregion
 
         private System.Windows.Forms.GroupBox grpLogin;
-        private System.Windows.Forms.TextBox txtPassword;
-        private System.Windows.Forms.TextBox txtEmail;
-        private System.Windows.Forms.Label lblPassword;
-        private System.Windows.Forms.Label lblEmail;
         private System.Windows.Forms.GroupBox grpAlbum;
         private System.Windows.Forms.Label lblDev;
         private System.Windows.Forms.TextBox txtAl;
@@ -277,6 +262,8 @@
         private System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.FolderBrowserDialog fbdSv;
         private System.Windows.Forms.LinkLabel lnkDonate;
+        private System.Windows.Forms.PictureBox pbFb;
+        private System.Windows.Forms.Label lblL1;
     }
 }
 
