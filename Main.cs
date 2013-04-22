@@ -279,8 +279,8 @@ namespace ADown
             }
 
             // Create a directory for the owner and album
-            Directory.CreateDirectory(String.Format(@"{0}\{1}", txtSv.Text, oName));
-            Directory.CreateDirectory(String.Format(@"{0}\{1}\{2}", txtSv.Text, oName, aName));
+            Directory.CreateDirectory(String.Format(@"{0}\{1}", txtSv.Text, ValidateWinName(oName)));
+            Directory.CreateDirectory(String.Format(@"{0}\{1}\{2}", txtSv.Text, ValidateWinName(oName), ValidateWinName(aName)));
 
 
             // Update the progress total
@@ -304,7 +304,7 @@ namespace ADown
                 // Download and save image
                 prog++;
                 picture = browser.GetImage(source);
-                picture.Save(String.Format(@"{0}\{1}\{2}\{3}.jpg", txtSv.Text, oName, aName, pid));
+                picture.Save(String.Format(@"{0}\{1}\{2}\{3}.jpg", txtSv.Text, ValidateWinName(oName), ValidateWinName(aName), pid));
                 updateProgress(prog, count);
             }
 
@@ -347,6 +347,26 @@ namespace ADown
                 lblL1.Visible = true;
                 btnADown.Enabled = true;
             }
+        }
+
+        /// <summary>
+        /// Validates the file/directory name and removes the invalid characters.
+        /// </summary>
+        /// <param name="str">The string to validate.</param>
+        /// <returns></returns>
+        public string ValidateWinName(string str)
+        {
+            StringBuilder sbuilder = new StringBuilder();
+
+            // Gets a char[] array of invalid characters
+            char[] invchars = Path.GetInvalidFileNameChars();
+
+            // Loop through each character of the given string, and basically passes the valid characters to the string builder variable
+            foreach (char cur in str)
+                if (!invchars.Contains(cur))
+                    sbuilder.Append(cur);
+
+            return sbuilder.ToString();
         }
     }
 }
