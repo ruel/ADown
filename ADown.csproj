@@ -50,6 +50,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasicReq.cs" />
+    <Compile Include="FacebookLogin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FacebookLogin.Designer.cs">
+      <DependentUpon>FacebookLogin.cs</DependentUpon>
+    </Compile>
     <Compile Include="JSON.cs" />
     <Compile Include="Main.cs">
       <SubType>Form</SubType>
@@ -59,6 +65,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="FacebookLogin.resx">
+      <DependentUpon>FacebookLogin.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Main.resx">
       <DependentUpon>Main.cs</DependentUpon>
     </EmbeddedResource>
@@ -70,6 +79,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -85,6 +95,8 @@
     <Content Include="ADown.ico" />
     <Content Include="License.txt" />
     <Content Include="README.txt" />
+    <None Include="Resources\Facebook-m.png" />
+    <None Include="Resources\Facebook.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
